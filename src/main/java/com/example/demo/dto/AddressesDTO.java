@@ -1,5 +1,5 @@
 // com.example.demo.dto.response.AddressesDTO.java
-package com.example.demo.dto.response;
+package com.example.demo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -24,41 +24,5 @@ public class AddressesDTO {
 
         public Long getId() {
                 return id;
-        }
-
-        public String getStreet() {
-                return street;
-        }
-
-        public String getStreetName() {
-                return streetName;
-        }
-
-        public String getBuildingNumber() {
-                return buildingNumber;
-        }
-
-        public String getCity() {
-                return city;
-        }
-
-        public String getZipcode() {
-                return zipcode;
-        }
-
-        public String getCountry() {
-                return country;
-        }
-
-        public String getCountryCode() {
-                return countryCode;
-        }
-
-        public Double getLatitude() {
-                return latitude;
-        }
-
-        public Double getLongitude() {
-                return longitude;
         }
 }

@@ -3,11 +3,13 @@ package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "addresses_data")
-@Data
+@Getter
+@Setter
 public class AddressesEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

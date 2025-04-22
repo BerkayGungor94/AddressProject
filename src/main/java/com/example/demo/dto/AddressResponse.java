@@ -1,4 +1,4 @@
-package com.example.demo.dto.response;
+package com.example.demo.dto;
 
 import lombok.Data;
 import lombok.Getter;
@@ -16,8 +16,4 @@ public class AddressResponse {
     private String seed;
     private String total;
     private List<AddressesDTO> data;
-
-    public List<AddressesDTO> getData() {
-        return data;
-    }
 }

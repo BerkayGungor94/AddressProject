@@ -2,12 +2,15 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "api_responses")
-@Data
 public class ApiResponseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +21,7 @@ public class ApiResponseEntity {
     private String seed;
     private int total;
 
-    @OneToMany(mappedBy = "api_response", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "apiResponse", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AddressesEntity> data;
 
 }
