@@ -2,8 +2,10 @@ package com.example.demo.service;
 
 import com.example.demo.dto.AddressResponse;
 import com.example.demo.entity.AddressesEntity;
+import com.example.demo.entity.ApiResponseEntity;
 import com.example.demo.factory.FactoryAddressDTO;
 import com.example.demo.repository.AddressEntityRepository;
+import com.example.demo.repository.ApiResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +22,10 @@ public class AddressService {
 
     private final RestTemplate restTemplate;
     private final AddressEntityRepository addressEntityRepository;
+    private final ApiResponseRepository apiResponseRepository;
     private final String url = "https://fakerapi.it/api/v2/addresses";
 
     public void fetchAndSaveAddress() {
-//        try {
-
         AddressResponse response = restTemplate.getForObject(url, AddressResponse.class);
 
         if (response.getData() != null) {

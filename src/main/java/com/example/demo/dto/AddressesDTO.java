@@ -21,8 +21,4 @@ public class AddressesDTO {
 
         private Double latitude;
         private Double longitude;
-
-        public Long getId() {
-                return id;
-        }
 }

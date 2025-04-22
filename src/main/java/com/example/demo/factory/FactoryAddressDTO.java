@@ -21,4 +21,15 @@ public class FactoryAddressDTO {
         return addressesEntity;
     }
 
+//    public static ApiResponseEntity convertToResponse(AddressResponse addressResponse) {
+//        ApiResponseEntity apiResponse = new ApiResponseEntity();
+//        apiResponse.setCode(addressResponse.getCode());
+//        //apiResponse.setData(addressResponse.getData());
+//        apiResponse.setSeed(addressResponse.getSeed());
+//        apiResponse.setStatus(addressResponse.getStatus());
+//        apiResponse.setLocale(addressResponse.getLocale());
+//        apiResponse.setTotal(Integer.parseInt(addressResponse.getTotal()));
+//        apiResponse.setId(apiResponse.getId());
+//        return  apiResponse;
+//    }
 }
