@@ -1,7 +1,9 @@
 package com.example.demo.factory;
 
+import com.example.demo.dto.AddressResponse;
 import com.example.demo.dto.AddressesDTO;
 import com.example.demo.entity.AddressesEntity;
+import com.example.demo.entity.ApiResponseEntity;
 
 public class FactoryAddressDTO {
 
@@ -21,15 +23,19 @@ public class FactoryAddressDTO {
         return addressesEntity;
     }
 
-//    public static ApiResponseEntity convertToResponse(AddressResponse addressResponse) {
-//        ApiResponseEntity apiResponse = new ApiResponseEntity();
-//        apiResponse.setCode(addressResponse.getCode());
-//        //apiResponse.setData(addressResponse.getData());
-//        apiResponse.setSeed(addressResponse.getSeed());
-//        apiResponse.setStatus(addressResponse.getStatus());
-//        apiResponse.setLocale(addressResponse.getLocale());
-//        apiResponse.setTotal(Integer.parseInt(addressResponse.getTotal()));
-//        apiResponse.setId(apiResponse.getId());
-//        return  apiResponse;
-//    }
+    public static AddressesDTO convertToDto(AddressesEntity entity) {
+        return new AddressesDTO(
+                entity.getId(),
+                entity.getCountry(),
+                entity.getCity(),
+                entity.getStreetName(),
+                entity.getZipcode(),
+                entity.getCountryCode(),
+                entity.getBuildingNumber(),
+                entity.getStreet(),
+                entity.getLatitude(),
+                entity.getLongitude()
+        );
+    }
+
 }

@@ -1,8 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.AddressResponse;
+import com.example.demo.dto.AddressesDTO;
 import com.example.demo.entity.AddressesEntity;
-import com.example.demo.entity.ApiResponseEntity;
 import com.example.demo.factory.FactoryAddressDTO;
 import com.example.demo.repository.AddressEntityRepository;
 import com.example.demo.repository.ApiResponseRepository;
@@ -25,7 +25,7 @@ public class AddressService {
     private final ApiResponseRepository apiResponseRepository;
     private final String url = "https://fakerapi.it/api/v2/addresses";
 
-    public void fetchAndSaveAddress() {
+    public List<AddressesDTO> fetchAndSaveAddress() {
         AddressResponse response = restTemplate.getForObject(url, AddressResponse.class);
 
         if (response.getData() != null) {
@@ -37,6 +37,11 @@ public class AddressService {
             addressEntityRepository.saveAll(entityList);
             logger.info("All data were saved successfully into " + AddressesEntity.class);
         }
+        return response.getData();
+    }
+
+    public List<AddressesEntity> getAllAddresses() {
+        return addressEntityRepository.findAllByOrderByIdAsc();
     }
 }
 
