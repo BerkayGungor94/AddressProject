@@ -43,5 +43,9 @@ public class AddressService {
     public List<AddressesEntity> getAllAddresses() {
         return addressEntityRepository.findAllByOrderByIdAsc();
     }
+
+    public List<AddressesEntity> getFilteredAddresses(String country, String city) {
+        return addressEntityRepository.findByCountryContainingIgnoreCaseAndCityContainingIgnoreCase(country, city);
+    }
 }
 

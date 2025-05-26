@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface AddressEntityRepository extends JpaRepository<AddressesEntity, Long> {
     List<AddressesEntity> findAllByOrderByIdAsc();
+
+    List<AddressesEntity> findByCountryContainingIgnoreCaseAndCityContainingIgnoreCase(String country, String city);
 }

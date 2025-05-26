@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,11 +29,16 @@ public class AddressController {
     }
 
     @GetMapping("/addresses")
-    public ResponseEntity<List<AddressesEntity>> getAllAddresses() {
-        List<AddressesEntity> addressesEntityList = addressService.getAllAddresses();
+    public ResponseEntity<List<AddressesEntity>> getAllAddresses(
+            @RequestParam(required = false, defaultValue = "") String country,
+            @RequestParam(required = false, defaultValue = "") String city
+    ) {
+        List<AddressesEntity> addressesEntityList = addressService.getFilteredAddresses(country, city);
         return ResponseEntity.ok(addressesEntityList);
 
     }
+
+
 
 
 
