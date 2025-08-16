@@ -11,3 +11,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+table td {
+  user-select: none;   /* yazı seçilemez */
+  cursor: grab;     /* normal ok imleci */
+}
+
