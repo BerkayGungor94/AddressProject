@@ -23,17 +23,22 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
         () => columns.reduce((acc, col) => ({ ...acc, [col.accessor as string]: col.isVisible !== false }), {})
     );
     const [showColumnOptions, setShowColumnOptions] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const PAGE_SIZE = 25; // sayfa başına kayıt sayısı
 
     const visibleColumns = columns.filter(c => columnVisibility[c.accessor as string]);
 
     const handleFilterChange = (value: string) => {
         setFilterValue(value);
+        setCurrentPage(1); // filtre değişince sayfa 1'e dönsün
     };
 
     const handleColumnVisibilityChange = (accessor: string, visible: boolean) => {
         setColumnVisibility(prev => ({ ...prev, [accessor]: visible }));
     };
 
+    // Filtrelenmiş veri
     const filteredData = selectedColumn
         ? data.filter(row => {
             const col = columns.find(c => c.accessor === selectedColumn);
@@ -52,6 +57,10 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
         })
         : data;
 
+    // Sayfalama hesaplama
+    const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
+    const paginatedData = filteredData.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
     return (
         <div>
             {/* Filtre ve Options */}
@@ -62,7 +71,8 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
                     value={selectedColumn}
                     onChange={e => {
                         setSelectedColumn(e.target.value);
-                        setFilterValue(""); // seçim değişince filtreyi sıfırla
+                        setFilterValue("");
+                        setCurrentPage(1);
                     }}
                 >
                     <option value="">Filtrele</option>
@@ -73,7 +83,6 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
                     ))}
                 </select>
 
-                {/* Sütuna göre input veya dropdown */}
                 {selectedColumn && (() => {
                     const col = columns.find(c => c.accessor === selectedColumn);
                     if (!col) return null;
@@ -117,7 +126,6 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
                     );
                 })()}
 
-                {/* Options simgesi */}
                 <div className="position-relative">
                     <button
                         className="btn btn-outline-secondary"
@@ -152,28 +160,18 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
                 <thead>
                 <tr>
                     {visibleColumns.map(col => (
-                        <th
-                            key={String(col.accessor)}
-                            style={{
-                                cursor: "default",
-                            }}
-                        >
+                        <th key={String(col.accessor)} style={{ cursor: "default" }}>
                             {col.header}
                         </th>
                     ))}
                 </tr>
                 </thead>
                 <tbody>
-                {filteredData.length > 0 ? (
-                    filteredData.map((row, idx) => (
+                {paginatedData.length > 0 ? (
+                    paginatedData.map((row, idx) => (
                         <tr key={idx} className={idx % 2 === 0 ? "table-light" : "table-white"}>
                             {visibleColumns.map(col => (
-                                <td
-                                    key={String(col.accessor)}
-                                    style={{
-                                        cursor: "default",
-                                    }}
-                                >
+                                <td key={String(col.accessor)} style={{ cursor: "default" }}>
                                     {col.type === "date" && row[col.accessor]
                                         ? new Date(row[col.accessor] as any).toLocaleDateString("tr-TR")
                                         : String(row[col.accessor] ?? "")}
@@ -190,6 +188,29 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
                 )}
                 </tbody>
             </table>
+
+            {/* Sayfa Kontrolleri */}
+            {totalPages > 1 && (
+                <div className="d-flex justify-content-center gap-2 mt-2">
+                    <button
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Önceki
+                    </button>
+                    <span className="align-self-center">
+            {currentPage} / {totalPages}
+          </span>
+                    <button
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Sonraki
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
