@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AddressesDTO;
 import com.example.demo.entity.AddressesEntity;
-import com.example.demo.factory.FactoryAddressDTO;
+import com.example.demo.entity.ArticlesEntity;
 import com.example.demo.repository.AddressEntityRepository;
 import com.example.demo.service.AddressService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -38,8 +38,22 @@ public class AddressController {
 
     }
 
+    @GetMapping("/fetchArticles")
+    public ResponseEntity<String> fetchAndSaveArticles() {
+        addressService.fetchAndSaveArticles();
+        return ResponseEntity.ok("Success!");
+    }
 
+    @GetMapping("/articles")
+    public ResponseEntity<List<ArticlesEntity>> getAllArticles() {
+        List<ArticlesEntity> articlesEntityList = addressService.getAllArticles();
+        addressService.fetchAndSaveArticles();
+        return ResponseEntity.ok(articlesEntityList);
+    }
 
-
-
+//    @GetMapping("/positiveLatitudes")
+//    public ResponseEntity<List<AddressesEntity>> getPositiveLatitudes() {
+//        List<AddressesEntity> positiveValues = addressService.getPositivelatitudes();
+//        return ResponseEntity.ok(positiveValues);
+//    }
 }
