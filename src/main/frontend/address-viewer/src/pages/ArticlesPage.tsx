@@ -53,7 +53,7 @@ const ArticlesPage: React.FC = () => {
 
     return (
         <div className="container mt-5">
-            <h2>Address List</h2>
+            <h2>Articles</h2>
 
             {loading ? (
                 <div className="d-flex justify-content-center">
