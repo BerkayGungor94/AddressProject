@@ -39,14 +39,14 @@ const AddressPage: React.FC = () => {
 
     const columns: Column<Address>[] = [
         { accessor: "id", header: "Id" },
-        { accessor: "latitude", header: "Latitude" },
-        { accessor: "longitude", header: "Longitude" },
-        { accessor: "buildingNumber", header: "Building Number" },
-        { accessor: "country", header: "Country" },
-        { accessor: "city", header: "City" },
-        { accessor: "street", header: "Street" },
-        { accessor: "streetName", header: "Street Name" },
-        { accessor: "zipcode", header: "Zip Code" },
+        { accessor: "latitude", header: "Latitude", filterType: "number" },
+        { accessor: "longitude", header: "Longitude", filterType: "number" },
+        { accessor: "buildingNumber", header: "Building Number", filterType: "number" },
+        { accessor: "country", header: "Country", filterType: "text" },
+        { accessor: "city", header: "City", filterType: "text" },
+        { accessor: "street", header: "Street", filterType: "text" },
+        { accessor: "streetName", header: "Street Name", filterType: "text" },
+        { accessor: "zipcode", header: "Zip Code", filterType: "number" },
     ];
 
     return (
@@ -62,7 +62,7 @@ const AddressPage: React.FC = () => {
                     {error}
                 </div>
             ) : (
-                <ReusableTable data={addresses} columns={columns} searchable />
+                <ReusableTable data={addresses} columns={columns} />
             )}
         </div>
     );

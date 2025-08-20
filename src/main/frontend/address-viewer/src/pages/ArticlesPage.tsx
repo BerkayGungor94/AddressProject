@@ -39,16 +39,16 @@ const ArticlesPage: React.FC = () => {
     }, []);
 
     const columns: Column<Articles>[] = [
-        { accessor: "id", header: "Id", type: "number" },
-        { accessor: "sourceId", header: "Source Id", type: "number" },
-        { accessor: "sourceName", header: "Source Name", type: "text" },
-        { accessor: "author", header: "Author", type: "text" },
-        { accessor: "title", header: "Title", type: "text" },
-        { accessor: "description", header: "Description", type: "text" },
-        { accessor: "url", header: "Url", type: "text" },
-        { accessor: "urlToImage", header: "UrlToImage", type: "text" },
-        { accessor: "publishedAt", header: "Published Date", type: "date" },
-        { accessor: "content", header: "Content", type: "text" },
+        { accessor: "id", header: "Id", filterType: "number" },
+        { accessor: "sourceId", header: "Source Id", filterType: "text" },
+        { accessor: "sourceName", header: "Source Name", filterType: "text" },
+        { accessor: "author", header: "Author", filterType: "text" },
+        { accessor: "title", header: "Title", filterType: "text" },
+        { accessor: "description", header: "Description", filterType: "text" },
+        { accessor: "url", header: "Url", filterType: "text" },
+        { accessor: "urlToImage", header: "UrlToImage", filterType: "text" },
+        { accessor: "publishedAt", header: "Published Date", filterType: "date" },
+        { accessor: "content", header: "Content", filterType: "text" },
     ];
 
     return (
@@ -64,7 +64,7 @@ const ArticlesPage: React.FC = () => {
                     {error}
                 </div>
             ) : (
-                <ReusableTable data={articles} columns={columns} searchable />
+                <ReusableTable data={articles} columns={columns} />
             )}
         </div>
     );

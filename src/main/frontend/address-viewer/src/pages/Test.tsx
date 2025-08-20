@@ -21,7 +21,7 @@ const TestPage: React.FC = () => {
     return (
         <div className="container mt-4">
             <h3>People Table</h3>
-            <ReusableTable data={people} columns={columns} searchable />
+            <ReusableTable data={people} columns={columns} />
         </div>
     );
 };

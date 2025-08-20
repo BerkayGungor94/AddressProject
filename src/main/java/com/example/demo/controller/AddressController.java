@@ -47,7 +47,6 @@ public class AddressController {
     @GetMapping("/articles")
     public ResponseEntity<List<ArticlesEntity>> getAllArticles() {
         List<ArticlesEntity> articlesEntityList = addressService.getAllArticles();
-        addressService.fetchAndSaveArticles();
         return ResponseEntity.ok(articlesEntityList);
     }
 

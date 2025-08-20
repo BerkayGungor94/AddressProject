@@ -1,187 +1,98 @@
 import React, { useState } from "react";
-import { FaFilter, FaCog } from "react-icons/fa";
 
-export interface Column<T> {
+type RowData = { [key: string]: any };
+
+export interface Column<T extends RowData> {
     accessor: keyof T;
     header: string;
-    isVisible?: boolean;
-    render?: (value: any, row: T) => React.ReactNode;
-    filterOptions?: string[];
-    type?: "text" | "number" | "date" | "select";
+    filterType?: "text" | "number" | "date" | "select";
 }
 
-interface TableProps<T> {
+interface TableProps<T extends RowData> {
     data: T[];
     columns: Column<T>[];
-    searchable: boolean;
 }
 
-function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
-    const [columnFilters, setColumnFilters] = useState<{ [key: string]: string }>(
-        {}
-    );
-    const [columnVisibility, setColumnVisibility] = useState<{
-        [key: string]: boolean;
-    }>(() =>
-        columns.reduce(
-            (acc, col) => ({
-                ...acc,
-                [col.accessor as string]: col.isVisible !== false,
-            }),
-            {}
-        )
-    );
-    const [showColumnOptions, setShowColumnOptions] = useState(false);
-    const [showFilterMenu, setShowFilterMenu] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
+const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
+    // Filtre değerleri
+    const [filterValues, setFilterValues] = useState<{ [key: string]: string }>({});
+    const [filterDropdown, setFilterDropdown] = useState<{ [key: string]: boolean }>({});
 
-    const PAGE_SIZE = 25;
-    const visibleColumns = columns.filter(
-        (c) => columnVisibility[c.accessor as string]
+    // Kolon görünürlüğü
+    const [columnsVisible, setColumnsVisible] = useState<{ [key: string]: boolean }>(
+        () => columns.reduce((acc, col) => ({ ...acc, [String(col.accessor)]: true }), {})
     );
 
-    const handleColumnFilterChange = (accessor: string, value: string) => {
-        setColumnFilters((prev) => ({ ...prev, [accessor]: value }));
-        setCurrentPage(1);
+    const [showOptions, setShowOptions] = useState(false);
+
+    const handleFilterChange = (accessor: string, value: string) => {
+        setFilterValues(prev => ({ ...prev, [accessor]: value }));
     };
 
-    const handleColumnVisibilityChange = (accessor: string, visible: boolean) => {
-        setColumnVisibility((prev) => ({ ...prev, [accessor]: visible }));
+    const toggleFilterDropdown = (accessor: string) => {
+        setFilterDropdown(prev => ({ ...prev, [accessor]: !prev[accessor] }));
     };
 
-    // Kombine filtreleme
+    const toggleColumnVisibility = (accessor: string) => {
+        setColumnsVisible(prev => ({ ...prev, [accessor]: !prev[accessor] }));
+    };
+
+    // Filtrelenmiş veri
     const filteredData = data.filter((row) => {
-        return Object.entries(columnFilters).every(([accessor, value]) => {
-            if (!value) return true;
-            const col = columns.find((c) => c.accessor === accessor);
-            if (!col) return true;
+        return columns.every((column) => {
+            if (!column.filterType) return true;
+            const filterValue = filterValues[String(column.accessor)];
+            if (!filterValue) return true;
 
-            const cellValue = row[accessor as keyof T];
-            if (col.type === "date") {
-                return (
-                    new Date(cellValue as any)
-                        .toLocaleDateString("tr-TR")
-                        .includes(value) ?? false
-                );
+            const cellValue = row[column.accessor];
+            if (column.filterType === "text") {
+                return String(cellValue).toLowerCase().includes(filterValue.toLowerCase());
             }
-            if (col.type === "number") {
-                return String(cellValue) === value;
+            if (column.filterType === "number") {
+                return Number(cellValue) === Number(filterValue);
             }
-            if (col.type === "select" && col.filterOptions) {
-                return cellValue?.toString() === value;
+            if (column.filterType === "date") {
+                return String(cellValue).startsWith(filterValue);
             }
-            return cellValue?.toString().toLowerCase().includes(value.toLowerCase());
+            if (column.filterType === "select") {
+                return String(cellValue) === filterValue;
+            }
+            return true;
         });
     });
 
-    const totalPages = Math.ceil(filteredData.length / PAGE_SIZE);
-    const paginatedData = filteredData.slice(
-        (currentPage - 1) * PAGE_SIZE,
-        currentPage * PAGE_SIZE
-    );
+    // Görünür kolonlar
+    const visibleColumns = columns.filter(col => columnsVisible[String(col.accessor)]);
 
     return (
-        <div>
-            {/* Filtre ve Options */}
-            <div className="d-flex align-items-center mb-3 gap-2">
-                {/* Filter dropdown menu */}
-                <div className="position-relative">
-                    <button
-                        className="btn btn-outline-secondary"
-                        onClick={() => setShowFilterMenu((prev) => !prev)}
+        <div style={{ position: "relative" }}>
+            {/* Options butonu */}
+            <div style={{ position: "relative", marginBottom: "1rem" }}>
+                <button onClick={() => setShowOptions(prev => !prev)}>⚙️ Columns</button>
+                {showOptions && (
+                    <div
+                        style={{
+                            position: "absolute",
+                            top: "100%",
+                            left: 0,
+                            background: "white",
+                            border: "1px solid #ccc",
+                            padding: "0.5rem",
+                            zIndex: 20,
+                        }}
                     >
-                        <FaFilter />
-                    </button>
-
-                    {showFilterMenu && (
-                        <div
-                            className="card position-absolute p-2"
-                            style={{ zIndex: 10, minWidth: "220px" }}
-                        >
-                            {columns.map((col) => (
-                                <div key={String(col.accessor)} className="mb-2">
-                                    <label className="form-label">{col.header}</label>
-                                    {col.type === "select" && col.filterOptions ? (
-                                        <select
-                                            className="form-control"
-                                            value={columnFilters[col.accessor as string] || ""}
-                                            onChange={(e) =>
-                                                handleColumnFilterChange(col.accessor as string, e.target.value)
-                                            }
-                                        >
-                                            <option value="">Tümü</option>
-                                            {col.filterOptions.map((opt) => (
-                                                <option key={opt} value={opt}>
-                                                    {opt}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    ) : col.type === "date" ? (
-                                        <input
-                                            type="date"
-                                            className="form-control"
-                                            value={columnFilters[col.accessor as string] || ""}
-                                            onChange={(e) =>
-                                                handleColumnFilterChange(col.accessor as string, e.target.value)
-                                            }
-                                        />
-                                    ) : (
-                                        <input
-                                            type={col.type === "number" ? "number" : "text"}
-                                            className="form-control"
-                                            placeholder={`${col.header} ara...`}
-                                            value={columnFilters[col.accessor as string] || ""}
-                                            onChange={(e) =>
-                                                handleColumnFilterChange(col.accessor as string, e.target.value)
-                                            }
-                                        />
-                                    )}
-                                </div>
-                            ))}
-                            <button
-                                className="btn btn-sm btn-outline-primary w-100 mt-1"
-                                onClick={() => setColumnFilters({})}
-                            >
-                                Clear All
-                            </button>
-                        </div>
-                    )}
-                </div>
-
-                {/* Column visibility */}
-                <div className="position-relative">
-                    <button
-                        className="btn btn-outline-secondary"
-                        onClick={() => setShowColumnOptions((prev) => !prev)}
-                    >
-                        <FaCog />
-                    </button>
-                    {showColumnOptions && (
-                        <div
-                            className="card position-absolute p-2"
-                            style={{ zIndex: 10, minWidth: "150px" }}
-                        >
-                            {columns.map((col) => (
-                                <label
-                                    key={String(col.accessor)}
-                                    className="d-flex align-items-center gap-1"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={columnVisibility[col.accessor as string]}
-                                        onChange={(e) =>
-                                            handleColumnVisibilityChange(
-                                                col.accessor as string,
-                                                e.target.checked
-                                            )
-                                        }
-                                    />
-                                    {col.header}
-                                </label>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                        {columns.map(col => (
+                            <label key={String(col.accessor)} style={{ display: "block", cursor: "pointer" }}>
+                                <input
+                                    type="checkbox"
+                                    checked={columnsVisible[String(col.accessor)]}
+                                    onChange={() => toggleColumnVisibility(String(col.accessor))}
+                                />{" "}
+                                {col.header}
+                            </label>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Tablo */}
@@ -189,24 +100,74 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
                 <thead>
                 <tr>
                     {visibleColumns.map((col) => (
-                        <th key={String(col.accessor)} style={{ cursor: "default" }}>
-                            {col.header}
+                        <th key={String(col.accessor)} style={{ position: "relative" }}>
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                {col.header}
+                                {col.filterType && (
+                                    <button
+                                        style={{
+                                            marginLeft: "0.5rem",
+                                            border: "none",
+                                            background: "transparent",
+                                            cursor: "pointer",
+                                        }}
+                                        onClick={() => toggleFilterDropdown(String(col.accessor))}
+                                    >
+                                        🔽
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Açılır filtre alanı */}
+                            {filterDropdown[String(col.accessor)] && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "100%",
+                                        left: 0,
+                                        background: "white",
+                                        border: "1px solid #ccc",
+                                        padding: "0.5rem",
+                                        zIndex: 10,
+                                    }}
+                                >
+                                    {col.filterType === "select" ? (
+                                        <select
+                                            value={filterValues[String(col.accessor)] || ""}
+                                            onChange={(e) =>
+                                                handleFilterChange(String(col.accessor), e.target.value)
+                                            }
+                                        >
+                                            <option value="">All</option>
+                                            {Array.from(new Set(data.map(row => row[col.accessor]))).map((val, idx) => (
+                                                <option key={idx} value={String(val)}>
+                                                    {String(val)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            type={col.filterType}
+                                            placeholder={`Filter ${col.header}`}
+                                            value={filterValues[String(col.accessor)] || ""}
+                                            onChange={(e) =>
+                                                handleFilterChange(String(col.accessor), e.target.value)
+                                            }
+                                        />
+                                    )}
+                                </div>
+                            )}
                         </th>
                     ))}
                 </tr>
                 </thead>
                 <tbody>
-                {paginatedData.length > 0 ? (
-                    paginatedData.map((row, idx) => (
-                        <tr
-                            key={idx}
-                            className={idx % 2 === 0 ? "table-light" : "table-white"}
-                        >
+                {filteredData.length > 0 ? (
+                    filteredData.map((row, idx) => (
+                        <tr key={idx}>
                             {visibleColumns.map((col) => (
-                                <td key={String(col.accessor)} style={{ cursor: "default" }}>
-                                    {col.type === "date" && row[col.accessor]
-                                        ? new Date(row[col.accessor] as any).toLocaleDateString("tr-TR")
-                                        : String(row[col.accessor] ?? "")}
+                                <td key={String(col.accessor)}>
+                                    {String(row[col.accessor])}
                                 </td>
                             ))}
                         </tr>
@@ -220,31 +181,8 @@ function ReusableTable<T extends object>({ data, columns }: TableProps<T>) {
                 )}
                 </tbody>
             </table>
-
-            {/* Sayfa Kontrolleri */}
-            {totalPages > 1 && (
-                <div className="d-flex justify-content-center gap-2 mt-2">
-                    <button
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
-                    >
-                        Önceki
-                    </button>
-                    <span className="align-self-center">
-            {currentPage} / {totalPages}
-          </span>
-                    <button
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                    >
-                        Sonraki
-                    </button>
-                </div>
-            )}
         </div>
     );
-}
+};
 
 export default ReusableTable;
