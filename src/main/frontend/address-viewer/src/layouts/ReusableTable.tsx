@@ -67,7 +67,7 @@ const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
     return (
         <div style={{ position: "relative" }}>
             {/* Options butonu */}
-            <div style={{ position: "relative", marginBottom: "1rem" }}>
+            <div style={{ position: "relative", marginBottom: "1rem", color: "aqua"  }}>
                 <button onClick={() => setShowOptions(prev => !prev)}>⚙️ Columns</button>
                 {showOptions && (
                     <div
