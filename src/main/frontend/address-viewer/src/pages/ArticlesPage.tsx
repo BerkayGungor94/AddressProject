@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { ClipLoader } from "react-spinners";
 import ReusableTable, { Column } from "../layouts/ReusableTable";
 import axiosConfig from "../api/axiosConfig";

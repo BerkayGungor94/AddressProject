@@ -65,9 +65,9 @@ const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
     const visibleColumns = columns.filter(col => columnsVisible[String(col.accessor)]);
 
     return (
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative", padding: "1rem", background: "#729bf1" }}>
             {/* Options butonu */}
-            <div style={{ position: "relative", marginBottom: "1rem", color: "aqua"  }}>
+            <div style={{ position: "relative", marginBottom: "1rem" }}>
                 <button onClick={() => setShowOptions(prev => !prev)}>⚙️ Columns</button>
                 {showOptions && (
                     <div

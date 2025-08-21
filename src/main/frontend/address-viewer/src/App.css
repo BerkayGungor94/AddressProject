@@ -3,7 +3,7 @@
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 400vmin;
   pointer-events: none;
 }
 
@@ -12,6 +12,18 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+
+body {
+  /* Arka plan resmi */
+  background-image: url('25646.jpg'); /* Örnek: public klasöründe */
+  background-size: cover;       /* Sayfayı kaplasın */
+  background-position: center;  /* Ortalı */
+  background-repeat: no-repeat; /* Tekrar etmesin */
+  background-attachment: fixed; /* Kaydırmada sabit kalsın */
+  margin: 0;
+  font-family: sans-serif;
+}
+
 
 .App-header {
   background-color: #282c34;
