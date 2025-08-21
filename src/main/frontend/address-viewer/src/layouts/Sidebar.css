@@ -1,0 +1,4 @@
+.sidebar-link {
+    user-select: none; /* Metin seçimini engeller */
+    cursor: pointer;   /* Fare ikonu pointer olarak kalsın */
+}
