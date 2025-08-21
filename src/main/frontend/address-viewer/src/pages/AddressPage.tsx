@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axiosConfig  from "../api/axiosConfig";
 import { ClipLoader } from "react-spinners";
 import ReusableTable, { Column } from "../layouts/ReusableTable";
 
@@ -24,13 +24,18 @@ const AddressPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        axios.get("http://localhost:8080/addresses")
-            .then(res => {
+        axiosConfig.get("/addresses")
+            .then((res) => {
                 setAddresses(res.data);
             })
-            .catch(err => {
-                setError("An error occurred while fetching data!");
-                console.error(err);
+            .catch((err) => {
+                if (err.response?.status === 401) {
+                    setError("Unauthorized! Please login again.");
+                    localStorage.removeItem("token");
+                    window.location.href = "/login";
+                } else {
+                    setError("An error occurred while fetching data!");
+                }
             })
             .finally(() => {
                 setLoading(false);
@@ -58,9 +63,7 @@ const AddressPage: React.FC = () => {
                     <ClipLoader size={50} color="#00BFFF" />
                 </div>
             ) : error ? (
-                <div className="alert alert-danger">
-                    {error}
-                </div>
+                <div className="alert alert-danger">{error}</div>
             ) : (
                 <ReusableTable data={addresses} columns={columns} />
             )}

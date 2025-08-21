@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
 import ReusableTable, { Column } from "../layouts/ReusableTable";
+import axiosConfig from "../api/axiosConfig";
 
 interface Articles {
     id: number;
@@ -25,13 +26,18 @@ const ArticlesPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        axios.get("http://localhost:8080/articles")
-            .then(res => {
+        axiosConfig.get("/articles")
+            .then((res) => {
                 setArticles(res.data);
             })
-            .catch(err => {
-                setError("An error occurred while fetching data!");
-                console.error(err);
+            .catch((err) => {
+                if (err.response?.status === 401) {
+                    setError("Unauthorized! Please login again.");
+                    localStorage.removeItem("token");
+                    window.location.href = "/login";
+                } else {
+                    setError("An error occurred while fetching data!");
+                }
             })
             .finally(() => {
                 setLoading(false);

@@ -2,6 +2,8 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import Sidebar from './layouts/Sidebar';
 import AddressPage from './pages/AddressPage';
 import ArticlesPage from "./pages/ArticlesPage";
+import Login from "./user/Login";
+import CreateUser from "./user/CreateUser";
 
 const App = () => {
     return (
@@ -12,6 +14,8 @@ const App = () => {
                     <Routes>
                         <Route path="/adresses" element={<AddressPage />} />
                         <Route path="/articles" element={<ArticlesPage />} />
+                        <Route path="/" element={<Login />} />
+                        <Route path="/register" element={<CreateUser />} />
                     </Routes>
                 </div>
             </div>

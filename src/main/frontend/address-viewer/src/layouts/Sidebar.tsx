@@ -18,7 +18,7 @@ const Sidebar: React.FC = () => {
 
     return (
         <div className="bg-light border-end p-3 vh-100" style={{ width: "200px" }}>
-            <h5 className="mb-4">BEko API</h5>
+            <h5 className="mb-4">Beko API</h5>
             <ul className="list-unstyled">
                 {menuItems.map((item, index) => (
                     <li key={index} className="mb-2">
