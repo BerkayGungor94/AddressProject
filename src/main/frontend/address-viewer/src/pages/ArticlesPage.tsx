@@ -16,6 +16,14 @@ interface Articles {
     content: string;
 }
 
+interface PagedResponse<T> {
+    content: T[];
+    totalPages: number;
+    totalElements: number;
+    size: number;
+    number: number; // current page
+}
+
 const ArticlesPage: React.FC = () => {
     const [articles, setArticles] = useState<Articles[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -25,9 +33,9 @@ const ArticlesPage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        axiosConfig.get("/articles")
+        axiosConfig.get<PagedResponse<Articles>>("/articles")
             .then((res) => {
-                setArticles(res.data);
+                setArticles(res.data.content);
             })
             .catch((err) => {
                 if (err.response?.status === 401) {

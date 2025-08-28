@@ -14,6 +14,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,7 +31,6 @@ public class AddressService {
 
     private final RestTemplate restTemplate;
     private final AddressEntityRepository addressEntityRepository;
-    private final ApiResponseRepository apiResponseRepository;
     private final ArticlesEntityRepository articlesEntityRepository;
     private final String url = "https://fakerapi.it/api/v2/addresses";
     private final String urlArticles = "https://newsapi.org/v2/everything?q=apple&from=2025-08-14&to=2025-08-14&sortBy=popularity&apiKey=4ff48156ca1d4010bf92762865bb1c99";
@@ -66,10 +67,6 @@ public class AddressService {
         return addressEntityRepository.findByCountryContainingIgnoreCaseAndCityContainingIgnoreCase(country, city);
     }
 
-//    public List<AddressesEntity> getPositivelatitudes() {
-//        return addressEntityRepository.findAllByPositiveLatitude();
-//    }
-
     public List<ArticlesDTO> fetchAndSaveArticles() {
         try {
             ArticlesResponse articlesResponse = restTemplate.getForObject(urlArticles, ArticlesResponse.class);
@@ -87,13 +84,17 @@ public class AddressService {
             return articlesResponse.getData();
         } catch (Exception e) {
             logger.error("Error while fetching or saving articles", e);
-            return Collections.emptyList(); // veya istersen RuntimeException fırlatabilirsin
+            return Collections.emptyList();
         }
     }
 
 
     public List<ArticlesEntity> getAllArticles() {
         return articlesEntityRepository.findAll();
+    }
+
+    public Page<ArticlesEntity> getArticles(Pageable pageable) {
+        return articlesEntityRepository.findAll(pageable);
     }
 }
 

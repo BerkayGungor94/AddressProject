@@ -1,29 +1,75 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { FaUser, FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [otp, setOtp] = useState("");
+    const [step, setStep] = useState<"login" | "email" | "otp">("login");
     const [error, setError] = useState("");
+    const [token, setToken] = useState("");
+    const navigate = useNavigate();
 
+    // --- Login ---
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
 
         try {
-            const response = await axios.post("http://localhost:8080/auth/login", {
+            const response = await axios.post("http://localhost:8080/api/auth/login", {
                 username,
                 password,
             });
 
-            const token = response.data;
-            localStorage.setItem("token", token);
+            const jwtToken = response.data;
+            setToken(jwtToken);
+            setStep("email");
 
-            window.location.href = "/adresses";
-        } catch (err) {
+        } catch (err: any) {
+            console.error(err.response?.data || err.message);
             setError("Login failed, check your credentials.");
+        }
+    };
+
+    // --- Send 2FA ---
+    const handleSend2FA = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        if (!email) {
+            setError("Email boş olamaz.");
+            return;
+        }
+
+        try {
+            const res = await axios.post("http://localhost:8080/api/auth/send-otp", { email });
+            console.log(res.data);
+            setStep("otp");
+        } catch (err: any) {
+            console.error(err.response?.data || err.message);
+            setError(err.response?.data?.message || "2FA kodu gönderilemedi.");
+        }
+    };
+
+    // --- Verify OTP ---
+    const handleVerifyOTP = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        try {
+            const res = await axios.post("http://localhost:8080/api/auth/verify-otp", {
+                email,
+                code: otp
+            });
+            console.log(res.data);
+            alert("OTP doğrulandı, login başarılı!");
+            navigate("/"); // Anasayfaya yönlendir
+        } catch (err: any) {
+            console.error(err.response?.data || err.message);
+            setError(err.response?.data?.message || "OTP doğrulanamadı.");
         }
     };
 
@@ -40,59 +86,101 @@ const Login: React.FC = () => {
                 </Link>
             </div>
 
-            {/* Form container */}
-            <form
-                onSubmit={handleLogin}
-                className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 flex flex-col gap-6 w-full max-w-sm"
-            >
-                <h2 className="text-4xl font-extrabold text-gray-800 text-center mb-6">
-                    Welcome Back
-                </h2>
+            {/* --- Login Step --- */}
+            {step === "login" && (
+                <form
+                    onSubmit={handleLogin}
+                    className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 flex flex-col gap-6 w-full max-w-sm"
+                >
+                    <h2 className="text-4xl font-extrabold text-gray-800 text-center mb-6">
+                        Welcome Back
+                    </h2>
 
-                {/* Username */}
-                <div className="flex items-center bg-white border border-gray-300 rounded-xl p-3 focus-within:ring-2 focus-within:ring-blue-400 transition-all">
-                    <div className="text-blue-600 mr-3">
-                        <FaUser size={22} />
+                    <div className="flex items-center bg-white border border-gray-300 rounded-xl p-3">
+                        <div className="text-blue-600 mr-3">
+                            <FaUser size={22} />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            className="outline-none w-full text-gray-800 text-lg"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
                     </div>
+
+                    <div className="flex items-center bg-white border border-gray-300 rounded-xl p-3">
+                        <div className="text-blue-600 mr-3">
+                            <FaLock size={22} />
+                        </div>
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            className="outline-none w-full text-gray-800 text-lg"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+                    <button className="bg-blue-700 text-white font-bold text-lg py-3 rounded-xl shadow-lg hover:bg-blue-800">
+                        Login
+                    </button>
+                </form>
+            )}
+
+            {/* --- Email Step --- */}
+            {step === "email" && (
+                <form
+                    onSubmit={handleSend2FA}
+                    className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 flex flex-col gap-6 w-full max-w-sm"
+                >
+                    <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+                        Two-Factor Authentication
+                    </h2>
+
+                    <input
+                        type="email"
+                        placeholder="Enter your email"
+                        className="outline-none w-full border border-gray-300 rounded-xl p-3 text-lg"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+
+                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+                    <button className="bg-green-600 text-white font-bold text-lg py-3 rounded-xl shadow-lg hover:bg-green-700">
+                        Send 2FA Code
+                    </button>
+                </form>
+            )}
+
+            {/* --- OTP Step --- */}
+            {step === "otp" && (
+                <form
+                    onSubmit={handleVerifyOTP}
+                    className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl p-10 flex flex-col gap-6 w-full max-w-sm"
+                >
+                    <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+                        Enter OTP Code
+                    </h2>
+
                     <input
                         type="text"
-                        placeholder="Username"
-                        className="outline-none w-full text-gray-800 text-lg placeholder-gray-400"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Enter the OTP code"
+                        className="outline-none w-full border border-gray-300 rounded-xl p-3 text-lg"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
                     />
-                </div>
 
-                {/* Password */}
-                <div className="flex items-center bg-white border border-gray-300 rounded-xl p-3 focus-within:ring-2 focus-within:ring-blue-400 transition-all">
-                    <div className="text-blue-600 mr-3">
-                        <FaLock size={22} />
-                    </div>
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="outline-none w-full text-gray-800 text-lg placeholder-gray-400"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
+                    {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
-                {/* Hata */}
-                {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-                {/* Login Button */}
-                <button className="bg-blue-700 text-white font-bold text-lg py-3 rounded-xl shadow-lg hover:bg-blue-800 transition-colors">
-                    Login
-                </button>
-
-                {/* Forgot password */}
-                <p className="text-sm text-center text-gray-700 mt-2">
-                    Forgot your password?{" "}
-                    <a href="#" className="text-blue-700 hover:underline">
-                        Reset
-                    </a>
-                </p>
-            </form>
+                    <button className="bg-purple-600 text-white font-bold text-lg py-3 rounded-xl shadow-lg hover:bg-purple-700">
+                        Verify Code
+                    </button>
+                </form>
+            )}
         </div>
     );
 };

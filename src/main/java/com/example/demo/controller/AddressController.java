@@ -2,25 +2,26 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.AddressesEntity;
 import com.example.demo.entity.ArticlesEntity;
-import com.example.demo.repository.AddressEntityRepository;
+import com.example.demo.repository.ArticlesEntityRepository;
 import com.example.demo.service.AddressService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class AddressController {
 
     private final AddressService addressService;
-    private final AddressEntityRepository addressEntityRepository;
+    private final ArticlesEntityRepository articlesEntityRepository;
 
     @GetMapping("/fetch")
     public ResponseEntity<String> fetchAndSaveAddress() {
@@ -45,14 +46,12 @@ public class AddressController {
     }
 
     @GetMapping("/articles")
-    public ResponseEntity<List<ArticlesEntity>> getAllArticles() {
-        List<ArticlesEntity> articlesEntityList = addressService.getAllArticles();
-        return ResponseEntity.ok(articlesEntityList);
+    public Page<ArticlesEntity> getArticles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1000000") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+        return articlesEntityRepository.findAll(pageable);
     }
 
-//    @GetMapping("/positiveLatitudes")
-//    public ResponseEntity<List<AddressesEntity>> getPositiveLatitudes() {
-//        List<AddressesEntity> positiveValues = addressService.getPositivelatitudes();
-//        return ResponseEntity.ok(positiveValues);
-//    }
 }

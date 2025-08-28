@@ -1,17 +1,36 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 
+// Axios instance oluştur
 const api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "http://localhost:8080/api",
+    headers: new AxiosHeaders({
+        "Content-Type": "application/json",
+    }),
 });
 
-// Request interceptor: her isteğe token ekle
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem("token");
+
+        // headers kesinlikle AxiosHeaders olmalı
+        if (!config.headers) {
+            config.headers = new AxiosHeaders();
+        }
+
+        if (token) {
+            (config.headers as AxiosHeaders).set("Authorization", `Bearer ${token}`);
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        console.error("API Hatası:", error.response?.data || error.message);
+        return Promise.reject(error);
     }
-    return config;
-});
+);
 
 export default api;
-// Bu kod, Axios'u kullanarak API isteklerini yapılandırmak için kullanılır.

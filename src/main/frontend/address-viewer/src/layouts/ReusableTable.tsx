@@ -11,18 +11,26 @@ export interface Column<T extends RowData> {
 interface TableProps<T extends RowData> {
     data: T[];
     columns: Column<T>[];
+    pageSize?: number;
 }
 
-const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
+const ReusableTable = <T extends RowData>({
+                                              data,
+                                              columns,
+                                              pageSize = 25
+                                          }: TableProps<T>) => {
     const [filterValues, setFilterValues] = useState<{ [key: string]: string }>({});
     const [filterDropdown, setFilterDropdown] = useState<{ [key: string]: boolean }>({});
     const [columnsVisible, setColumnsVisible] = useState<{ [key: string]: boolean }>(
         () => columns.reduce((acc, col) => ({ ...acc, [String(col.accessor)]: true }), {})
     );
     const [showOptions, setShowOptions] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [modalContent, setModalContent] = useState<string | null>(null);
 
     const handleFilterChange = (accessor: string, value: string) => {
         setFilterValues(prev => ({ ...prev, [accessor]: value }));
+        setCurrentPage(1);
     };
 
     const toggleFilterDropdown = (accessor: string) => {
@@ -58,9 +66,20 @@ const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
 
     const visibleColumns = columns.filter(col => columnsVisible[String(col.accessor)]);
 
+    // --- Pagination ---
+    const totalPages = Math.ceil(filteredData.length / pageSize);
+    const startIdx = (currentPage - 1) * pageSize;
+    const currentData = filteredData.slice(startIdx, startIdx + pageSize);
+
+    const goToPage = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+        }
+    };
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-900 via-blue-800 to-blue-700 p-6">
-            <div className="bg-white shadow-2xl rounded-2xl w-full max-w-6xl p-6">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r via-blue-800 to-blue-700">
+            <div className="bg-dark-subtle border-r-gray-500-200 shadow-2xl rounded-2xl w-full max-w-6xl p-6">
                 {/* Options */}
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold text-blue-900">📊 Data Table</h2>
@@ -91,7 +110,7 @@ const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
                 {/* Table */}
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-sm text-gray-700">
-                        <thead className="bg-blue-700 text-white">
+                        <thead className="bg-gray-600 text-white">
                         <tr>
                             {visibleColumns.map((col) => (
                                 <th key={String(col.accessor)} className="p-3 text-left relative">
@@ -142,14 +161,25 @@ const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
                         </tr>
                         </thead>
                         <tbody>
-                        {filteredData.length > 0 ? (
-                            filteredData.map((row, idx) => (
+                        {currentData.length > 0 ? (
+                            currentData.map((row, idx) => (
                                 <tr key={idx} className="hover:bg-blue-100 transition">
-                                    {visibleColumns.map((col) => (
-                                        <td key={String(col.accessor)} className="p-3 border">
-                                            {String(row[col.accessor])}
-                                        </td>
-                                    ))}
+                                    {visibleColumns.map((col) => {
+                                        const rawValue = row[col.accessor];
+                                        const cellValue = rawValue == null ? "-" : String(rawValue);
+                                        const isOverflowing = cellValue.length > 30;
+
+                                        return (
+                                            <td
+                                                key={String(col.accessor)}
+                                                className="p-3 border cursor-pointer max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"
+                                                onClick={() => isOverflowing && setModalContent(cellValue)}
+                                                title={isOverflowing ? "Click to view full content" : undefined}
+                                            >
+                                                {cellValue}
+                                            </td>
+                                        );
+                                    })}
                                 </tr>
                             ))
                         ) : (
@@ -162,6 +192,64 @@ const ReusableTable = <T extends RowData>({ data, columns }: TableProps<T>) => {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination Controls */}
+                <div className="flex justify-center items-center gap-2 mt-4">
+                    <button
+                        onClick={() => goToPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
+                    >
+                        ⬅️ Prev
+                    </button>
+
+                    <span className="text-gray-700">
+        Page {currentPage} / {totalPages || 1}
+    </span>
+
+                    {/* Sayfa numarası girme alanı */}
+                    <input
+                        type="number"
+                        min={1}
+                        max={totalPages}
+                        value={currentPage}
+                        onChange={(e) => {
+                            const page = Number(e.target.value);
+                            if (page >= 1 && page <= totalPages) {
+                                goToPage(page);
+                            }
+                        }}
+                        className="w-16 px-2 py-1 border rounded text-center"
+                    />
+
+                    <button
+                        onClick={() => goToPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1 bg-blue-500 text-white rounded disabled:opacity-50"
+                    >
+                        Next ➡️
+                    </button>
+                </div>
+
+
+                {/* Modal */}
+                {modalContent && (
+                    <div
+                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                        onClick={() => setModalContent(null)}
+                    >
+                        <div className="bg-white p-6 rounded shadow-lg max-w-lg max-h-[80vh] overflow-auto">
+                            <h3 className="text-lg font-bold mb-4">Full Content</h3>
+                            <p>{modalContent}</p>
+                            <button
+                                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                onClick={() => setModalContent(null)}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
