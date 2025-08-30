@@ -24,7 +24,7 @@ const Login: React.FC = () => {
                 password,
             });
 
-            const jwtToken = response.data;
+            const jwtToken = response.data.token;
             setToken(jwtToken);
             setStep("email");
 

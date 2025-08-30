@@ -9,7 +9,7 @@ interface SidebarItem {
 }
 
 const menuItems: SidebarItem[] = [
-    { name: "Addresses", path: "/adresses" },
+    { name: "Addresses", path: "/addresses" },
     { name: "Articles", path: "/articles" },
 ];
 

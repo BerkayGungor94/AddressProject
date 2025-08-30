@@ -12,7 +12,7 @@ const App = () => {
                 <Sidebar />
                 <div className="flex-grow-1 p-3">
                     <Routes>
-                        <Route path="/adresses" element={<AddressPage />} />
+                        <Route path="/addresses" element={<AddressPage />} />
                         <Route path="/articles" element={<ArticlesPage />} />
                         <Route path="/auth/login" element={<Login />} />
                         <Route path="/auth/register" element={<CreateUser />} />

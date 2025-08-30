@@ -20,10 +20,7 @@ public class UserEntity {
     private String password;
 
     private String email;
-
     private String role;
 
     private Boolean is2faRequired;
-
-    private String secretKey;
 }
