@@ -14,7 +14,7 @@ public class EmailVerificationService {
         String code = String.format("%06d", new Random().nextInt(999999));
         emailService.sendEmail(
                 email,
-                "Your Verification Code",
+                "Your Verification Code by ROKO",
                 "Your verification code is: " + code
         );
         return code;

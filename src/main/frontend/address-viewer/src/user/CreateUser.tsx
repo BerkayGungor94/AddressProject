@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const CreateUser: React.FC = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-
+    const navigate = useNavigate();
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -19,15 +21,18 @@ const CreateUser: React.FC = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/auth/register", {
+            const response = await axios.post("http://localhost:8080/api/auth/register", {
                 username,
                 password,
+                email
             });
 
             setSuccess("User created successfully!");
             setUsername("");
             setPassword("");
+            setEmail("");
             setConfirmPassword("");
+            navigate("/login");
         } catch (err) {
             setError("User creation failed. Try again.");
         }
@@ -47,6 +52,13 @@ const CreateUser: React.FC = () => {
                     className="border p-2 rounded"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                />
+
+                <input
+                    type="text"
+                    placeholder="email"
+                    className="border p-2 rounded"
+                    onChange={(e) => setEmail(e.target.value)}
                 />
 
                 <input

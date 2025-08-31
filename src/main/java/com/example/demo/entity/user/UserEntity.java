@@ -20,7 +20,14 @@ public class UserEntity {
     private String password;
 
     private String email;
-    private String role;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private Boolean is2faRequired;
+
+    public enum Role{
+        ROLE_USER,
+        ROLE_ADMIN
+    }
 }

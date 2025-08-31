@@ -86,6 +86,7 @@ public class AuthController {
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody UserEntity user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(UserEntity.Role.ROLE_USER);
         userRepository.save(user);
         return Map.of("message", "User registered successfully");
     }
