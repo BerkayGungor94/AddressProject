@@ -10,16 +10,13 @@ public class EmailVerificationService {
     @Autowired
     private EmailService emailService;
 
-    public String generateVerificationCode() {
-        return String.format("%06d", new Random().nextInt(999999));
-    }
-
-    public void sendVerificationCode(String email) {
-        String code = generateVerificationCode();
-        emailService.sendEmail(email, "Your Verification Code", "Your verification code is: " + code);
-    }
-
-    public boolean verifyCode(String userEmail, String enteredCode, String sentCode) {
-        return sentCode.equals(enteredCode);
+    public String sendVerificationCode(String email) {
+        String code = String.format("%06d", new Random().nextInt(999999));
+        emailService.sendEmail(
+                email,
+                "Your Verification Code",
+                "Your verification code is: " + code
+        );
+        return code;
     }
 }

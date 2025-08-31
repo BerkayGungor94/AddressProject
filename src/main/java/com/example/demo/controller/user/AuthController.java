@@ -48,9 +48,8 @@ public class AuthController {
 
         Map<String, String> response = new HashMap<>();
         if (user.getIs2faRequired()) {
-            String code = emailVerificationService.generateVerificationCode();
+            String code = emailVerificationService.sendVerificationCode(email);
             System.out.println("Generated OTP for " + email + ": " + code);
-            emailVerificationService.sendVerificationCode(email);
             verificationCodes.put(email, code);
             System.out.println("Current map: " + verificationCodes);
             response.put("message", "OTP sent to " + email);
@@ -59,6 +58,7 @@ public class AuthController {
         }
         return response;
     }
+
 
     @PostMapping("/verify-otp")
     public Map<String, String> verifyOtp(@RequestBody Map<String, String> request) {
@@ -88,8 +88,8 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody UserEntity user) {
         try {
-            String encoded = new BCryptPasswordEncoder().encode("admin");
-            System.out.println(encoded);
+//            String encoded = new BCryptPasswordEncoder().encode("admin");
+//            System.out.println(encoded);
 
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
