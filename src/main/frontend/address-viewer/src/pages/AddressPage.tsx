@@ -29,10 +29,19 @@ const AddressPage: React.FC = () => {
                 setAddresses(res.data);
             })
             .catch((err) => {
-                if (err.response?.status === 401) {
-                    setError("Unauthorized! Please login again.");
-                    localStorage.removeItem("token");
-                    window.location.href = "/login";
+                const status = err.response?.status;
+                const message = err.response?.data?.message;
+
+                if (status === 401 || status === 403) {
+                    if (message === "2FA required") {
+                        setError("Two-factor authentication required. Please verify your OTP.");
+                        localStorage.removeItem("token");
+                        window.location.href = "/login";
+                    } else {
+                        setError("Unauthorized! Please login again.");
+                        localStorage.removeItem("token");
+                        window.location.href = "/login";
+                    }
                 } else {
                     setError("An error occurred while fetching data!");
                 }
@@ -41,6 +50,7 @@ const AddressPage: React.FC = () => {
                 setLoading(false);
             });
     }, []);
+
 
     const columns: Column<Address>[] = [
         { accessor: "id", header: "Id" },

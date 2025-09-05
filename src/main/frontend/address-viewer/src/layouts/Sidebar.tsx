@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
@@ -16,23 +16,25 @@ const menuItems: SidebarItem[] = [
 const Sidebar: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-
-    const token = localStorage.getItem("token"); // login kontrolü
+    const [isLoggedIn] = useState<boolean>(!!localStorage.getItem("token"));
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        navigate("/login");
+        // Tam sayfa reload ile login sayfasına yönlendir
+        window.location.href = "/auth/login";
     };
 
     const handleLoginRedirect = () => {
+        // Login sayfasına yönlendir, reload gerek yok
         navigate("/auth/login");
     };
+
 
     return (
         <div className="bg-light border-end p-3 vh-100" style={{ width: "200px" }}>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h5 className="m-0">Beko API</h5>
-                {token ? (
+                {isLoggedIn ? (
                     <button
                         onClick={handleLogout}
                         className="btn btn-sm btn-outline-danger"
