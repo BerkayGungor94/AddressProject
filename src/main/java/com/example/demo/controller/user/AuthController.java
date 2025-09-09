@@ -57,6 +57,15 @@ public class AuthController {
             UserEntity dbUser = userRepository.findByUsername(username)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+            if (dbUser.getRole().equals("ROLE_ADMIN")) {
+                String access = jwtUtil.generateAccessToken(dbUser.getUsername());
+                return Map.of(
+                        "twoFactorRequired", false,
+                        "token", access,
+                        "message", "Login successful (admin, no 2FA)"
+                );
+            }
+
             if (Boolean.TRUE.equals(dbUser.getIs2faRequired())) {
                 String tempToken = jwtUtil.generateTempToken(dbUser.getEmail());
                 return Map.of(
@@ -64,14 +73,15 @@ public class AuthController {
                         "tempToken", tempToken,
                         "message", "2FA required"
                 );
-            } else {
-                String access = jwtUtil.generateAccessToken(dbUser.getUsername());
-                return Map.of(
-                        "twoFactorRequired", false,
-                        "token", access,
-                        "message", "Login successful"
-                );
             }
+
+            // Admin değil ve 2FA gerekmiyorsa
+            String access = jwtUtil.generateAccessToken(dbUser.getUsername());
+            return Map.of(
+                    "twoFactorRequired", false,
+                    "token", access,
+                    "message", "Login successful"
+            );
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
@@ -95,7 +105,6 @@ public class AuthController {
         return Map.of("message", "OTP sent", "email", email);
     }
 
-    // OTP doğrulama: tempToken + code
     @PostMapping("/verify-otp")
     public Map<String, String> verifyOtp(@RequestBody Map<String, String> req) {
         String tempToken = req.get("tempToken");
@@ -122,7 +131,6 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid OTP");
         }
 
-        // OTP doğru → ACCESS token üret ve OTP kaydını sil
         verificationCodes.remove(email);
 
         UserEntity user = userRepository.findByEmail(email)

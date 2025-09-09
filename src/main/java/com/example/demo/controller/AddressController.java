@@ -30,11 +30,8 @@ public class AddressController {
     }
 
     @GetMapping("/addresses")
-    public ResponseEntity<List<AddressesEntity>> getAllAddresses(
-            @RequestParam(required = false, defaultValue = "") String country,
-            @RequestParam(required = false, defaultValue = "") String city
-    ) {
-        List<AddressesEntity> addressesEntityList = addressService.getFilteredAddresses(country, city);
+    public ResponseEntity<List<AddressesEntity>> getAllAddresses() {
+        List<AddressesEntity> addressesEntityList = addressService.getAllAddresses();
         return ResponseEntity.ok(addressesEntityList);
 
     }
