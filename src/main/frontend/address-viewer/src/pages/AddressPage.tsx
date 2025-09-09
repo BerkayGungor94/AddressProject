@@ -53,7 +53,7 @@ const AddressPage: React.FC = () => {
 
 
     const columns: Column<Address>[] = [
-        { accessor: "id", header: "Id" },
+        { accessor: "id", header: "Id"  },
         { accessor: "latitude", header: "Latitude", filterType: "number" },
         { accessor: "longitude", header: "Longitude", filterType: "number" },
         { accessor: "buildingNumber", header: "Building Number", filterType: "number" },

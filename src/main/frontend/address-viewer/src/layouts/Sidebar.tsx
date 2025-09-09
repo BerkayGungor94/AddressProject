@@ -11,6 +11,7 @@ interface SidebarItem {
 const menuItems: SidebarItem[] = [
     { name: "Addresses", path: "/addresses" },
     { name: "Articles", path: "/articles" },
+    { name: "Animals", path: "/animals" },
 ];
 
 const Sidebar: React.FC = () => {

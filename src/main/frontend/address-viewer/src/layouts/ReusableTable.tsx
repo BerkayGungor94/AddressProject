@@ -78,42 +78,44 @@ const ReusableTable = <T extends RowData>({
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r via-blue-800 to-blue-700">
-            <div className="bg-dark-subtle border-r-gray-500-200 shadow-2xl rounded-2xl w-full max-w-6xl p-6">
+        <div className="min-h-screen bg-gray-100 py-8 px-6">
+            <div className="bg-white shadow-xl rounded-xl w-full p-6">
                 {/* Options */}
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-blue-900">📊 Data Table</h2>
-                    <button
-                        onClick={() => setShowOptions(prev => !prev)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                    >
-                        ⚙️ Columns
-                    </button>
-                </div>
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowOptions(prev => !prev)}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                        >
+                            ⚙️ Columns
+                        </button>
 
-                {showOptions && (
-                    <div className="absolute bg-white shadow-lg border rounded-lg p-4 z-50">
-                        {columns.map(col => (
-                            <label key={String(col.accessor)} className="block cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={columnsVisible[String(col.accessor)]}
-                                    onChange={() => toggleColumnVisibility(String(col.accessor))}
-                                    className="mr-2"
-                                />
-                                {col.header}
-                            </label>
-                        ))}
+                        {showOptions && (
+                            <div className="absolute right-0 mt-2 bg-white shadow-lg border rounded-lg p-4 z-50">
+                                {columns.map(col => (
+                                    <label key={String(col.accessor)} className="block cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={columnsVisible[String(col.accessor)]}
+                                            onChange={() => toggleColumnVisibility(String(col.accessor))}
+                                            className="mr-2"
+                                        />
+                                        {col.header}
+                                    </label>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse text-sm text-gray-700">
+                    <table className="w-full border-collapse text-base text-gray-700">
                         <thead className="bg-gray-600 text-white">
                         <tr>
                             {visibleColumns.map((col) => (
-                                <th key={String(col.accessor)} className="p-3 text-left relative">
+                                <th key={String(col.accessor)} className="p-4 text-left relative">
                                     <div className="flex items-center">
                                         {col.header}
                                         {col.filterType && (
@@ -127,7 +129,7 @@ const ReusableTable = <T extends RowData>({
                                     </div>
 
                                     {filterDropdown[String(col.accessor)] && (
-                                        <div className="absolute mt-2 bg-white shadow-lg border rounded-lg p-2 z-50">
+                                        <div className="absolute right-0 mt-2 bg-white shadow-lg border rounded-lg p-2 z-50">
                                             {col.filterType === "select" ? (
                                                 <select
                                                     value={filterValues[String(col.accessor)] || ""}
@@ -163,7 +165,10 @@ const ReusableTable = <T extends RowData>({
                         <tbody>
                         {currentData.length > 0 ? (
                             currentData.map((row, idx) => (
-                                <tr key={idx} className="hover:bg-blue-100 transition">
+                                <tr
+                                    key={idx}
+                                    className="odd:bg-gray-50 even:bg-white hover:bg-blue-100 transition"
+                                >
                                     {visibleColumns.map((col) => {
                                         const rawValue = row[col.accessor];
                                         const cellValue = rawValue == null ? "-" : String(rawValue);
@@ -172,7 +177,7 @@ const ReusableTable = <T extends RowData>({
                                         return (
                                             <td
                                                 key={String(col.accessor)}
-                                                className="p-3 border cursor-pointer max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"
+                                                className="p-4 border cursor-pointer max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap"
                                                 onClick={() => isOverflowing && setModalContent(cellValue)}
                                                 title={isOverflowing ? "Click to view full content" : undefined}
                                             >
@@ -184,17 +189,21 @@ const ReusableTable = <T extends RowData>({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={visibleColumns.length} className="text-center p-4 text-gray-500">
+                                <td
+                                    colSpan={visibleColumns.length}
+                                    className="text-center p-4 text-gray-500"
+                                >
                                     No data found
                                 </td>
                             </tr>
                         )}
                         </tbody>
+
                     </table>
                 </div>
 
-                {/* Pagination Controls */}
-                <div className="flex justify-center items-center gap-2 mt-4">
+                {/* Pagination */}
+                <div className="flex justify-center items-center gap-2 mt-6">
                     <button
                         onClick={() => goToPage(currentPage - 1)}
                         disabled={currentPage === 1}
@@ -204,10 +213,9 @@ const ReusableTable = <T extends RowData>({
                     </button>
 
                     <span className="text-gray-700">
-        Page {currentPage} / {totalPages || 1}
-    </span>
+                    Page {currentPage} / {totalPages || 1}
+                </span>
 
-                    {/* Sayfa numarası girme alanı */}
                     <input
                         type="number"
                         min={1}
@@ -230,29 +238,11 @@ const ReusableTable = <T extends RowData>({
                         Next ➡️
                     </button>
                 </div>
-
-
-                {/* Modal */}
-                {modalContent && (
-                    <div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                        onClick={() => setModalContent(null)}
-                    >
-                        <div className="bg-white p-6 rounded shadow-lg max-w-lg max-h-[80vh] overflow-auto">
-                            <h3 className="text-lg font-bold mb-4">Full Content</h3>
-                            <p>{modalContent}</p>
-                            <button
-                                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                                onClick={() => setModalContent(null)}
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
+
+
 };
 
 export default ReusableTable;

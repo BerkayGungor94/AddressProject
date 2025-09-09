@@ -12,7 +12,6 @@ api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("token");
 
-        // headers kesinlikle AxiosHeaders olmalı
         if (!config.headers) {
             config.headers = new AxiosHeaders();
         }

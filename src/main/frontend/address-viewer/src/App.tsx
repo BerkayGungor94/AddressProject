@@ -4,6 +4,7 @@ import AddressPage from './pages/AddressPage';
 import ArticlesPage from "./pages/ArticlesPage";
 import Login from "./user/Login";
 import CreateUser from "./user/CreateUser";
+import AnimalPage from "./pages/AnimalPage";
 
 const App = () => {
     return (
@@ -14,6 +15,7 @@ const App = () => {
                     <Routes>
                         <Route path="/addresses" element={<AddressPage />} />
                         <Route path="/articles" element={<ArticlesPage />} />
+                        <Route path="/animals" element={<AnimalPage />} />
                         <Route path="/auth/login" element={<Login />} />
                         <Route path="/auth/register" element={<CreateUser />} />
                     </Routes>

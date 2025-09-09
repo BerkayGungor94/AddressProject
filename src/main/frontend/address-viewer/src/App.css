@@ -15,7 +15,6 @@
 
 body {
   /* Arka plan resmi */
-  background-image: url('25646.jpg'); /* Örnek: public klasöründe */
   background-size: cover;       /* Sayfayı kaplasın */
   background-position: center;  /* Ortalı */
   background-repeat: no-repeat; /* Tekrar etmesin */
