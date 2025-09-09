@@ -2,5 +2,4 @@
 
 # It includes a simple backend with Spring Boot and a frontend with React and TypeScript.
 
-# Warning: The verification code which sent to email has a bug at the moment, please check logs from the project to find
-# the real code
+# You have to write your email address to get the verification codes (2FA) which is written while signing up to the system.
