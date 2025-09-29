@@ -21,7 +21,7 @@ const CreateUser: React.FC = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/register", {
+            const response = await axios.post("http://13.61.35.238:8080/api/auth/register", {
                 username,
                 password,
                 email

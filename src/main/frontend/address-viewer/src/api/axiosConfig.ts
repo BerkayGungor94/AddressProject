@@ -1,12 +1,12 @@
 import axios, { AxiosHeaders } from "axios";
 
-// Axios instance oluştur
 const api = axios.create({
-    baseURL: "http://localhost:8080/api",
+    baseURL: "http://13.61.35.238:8080/api",
     headers: new AxiosHeaders({
         "Content-Type": "application/json",
     }),
 });
+
 
 api.interceptors.request.use(
     (config) => {

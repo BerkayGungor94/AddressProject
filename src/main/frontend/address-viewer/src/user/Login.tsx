@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { FaUser, FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../api/axiosConfig";
+
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState("");
@@ -11,7 +12,6 @@ const Login: React.FC = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    // localStorage'da tempToken ve accessToken tutacağız
     const [tempToken, setTempToken] = useState<string | null>(
         localStorage.getItem("tempToken")
     );
@@ -22,24 +22,22 @@ const Login: React.FC = () => {
         setError("");
 
         try {
-            const res = await axios.post("http://localhost:8080/api/auth/login", {
+            const res = await api.post("/auth/login", {
                 username,
                 password,
-            });
+            }, { withCredentials: true });
 
             if (res.data.twoFactorRequired) {
-                // 2FA gerekli → tempToken döndü
                 localStorage.setItem("tempToken", res.data.tempToken);
                 setTempToken(res.data.tempToken);
 
-                // OTP kodunu backend'e mail attır
-                await axios.post("http://localhost:8080/api/auth/send-otp", {
+                // OTP gönder
+                await api.post("/auth/send-otp", {
                     tempToken: res.data.tempToken,
                 });
 
                 setStep("otp");
             } else {
-                // 2FA yok → access token geldi
                 localStorage.setItem("token", res.data.token);
                 navigate("/");
             }
@@ -55,12 +53,11 @@ const Login: React.FC = () => {
         setError("");
 
         try {
-            const res = await axios.post("http://localhost:8080/api/auth/verify-otp", {
+            const res = await api.post("/auth/verify-otp", {
                 tempToken: tempToken,
                 code: otp,
             });
 
-            // Access token kaydet
             localStorage.removeItem("tempToken");
             localStorage.setItem("token", res.data.token);
 
@@ -73,7 +70,7 @@ const Login: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-800 via-blue-600 to-blue-400 relative p-4">
-            {/* Sağ üst köşe Sign Up */}
+            {/* Sign Up */}
             <div className="absolute top-6 right-6">
                 <Link
                     to="/auth/register"
@@ -83,7 +80,7 @@ const Login: React.FC = () => {
                 </Link>
             </div>
 
-            {/* --- Login Step --- */}
+            {/* Login Step */}
             {step === "login" && (
                 <form
                     onSubmit={handleLogin}
@@ -129,7 +126,7 @@ const Login: React.FC = () => {
                 </form>
             )}
 
-            {/* --- OTP Step --- */}
+            {/* OTP Step */}
             {step === "otp" && (
                 <form
                     onSubmit={handleVerifyOTP}

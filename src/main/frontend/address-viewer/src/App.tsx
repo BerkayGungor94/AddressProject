@@ -13,11 +13,11 @@ const App = () => {
                 <Sidebar />
                 <div className="flex-grow-1 p-3">
                     <Routes>
-                        <Route path="/addresses" element={<AddressPage />} />
-                        <Route path="/articles" element={<ArticlesPage />} />
-                        <Route path="/animals" element={<AnimalPage />} />
-                        <Route path="/auth/login" element={<Login />} />
-                        <Route path="/auth/register" element={<CreateUser />} />
+                        <Route path="/api/addresses" element={<AddressPage />} />
+                        <Route path="/api/articles" element={<ArticlesPage />} />
+                        <Route path="/api/animals" element={<AnimalPage />} />
+                        <Route path="/api/auth/login" element={<Login />} />
+                        <Route path="/api/auth/register" element={<CreateUser />} />
                     </Routes>
                 </div>
             </div>
