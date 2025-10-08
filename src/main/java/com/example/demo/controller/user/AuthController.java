@@ -36,6 +36,7 @@ public class AuthController {
     public Map<String, String> register(@RequestBody UserEntity user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(UserEntity.Role.ROLE_USER);
+        user.setIs2faRequired(true);
         userRepository.save(user);
         return Map.of("message", "User registered successfully");
     }
