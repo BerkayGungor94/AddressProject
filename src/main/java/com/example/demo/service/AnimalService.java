@@ -5,6 +5,7 @@ import com.example.demo.dto.AnimalsDTO;
 import com.example.demo.entity.animals.AnimalEntity;
 import com.example.demo.factory.FactoryAddressDTO;
 import com.example.demo.repository.animals.AnimalRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,11 @@ public class AnimalService {
     private final ApiAnimalsClient apiAnimalsClient;
     private final AnimalRepository animalRepository;
 
-//    @PostConstruct
-//    public void init() {
-//        fetchAndSaveAnimals();
-//        log.info("fetchAndSaveAnimals service initialized!");
-//    }
+    @PostConstruct
+    public void init() {
+        fetchAndSaveAnimals();
+        log.info("fetchAndSaveAnimals service initialized!");
+    }
 
     public void fetchAndSaveAnimals() {
         List<AnimalsDTO> animalResponseList = apiAnimalsClient.getAnimals("live_oWoH1yOl1srNkxnxm2AgjQZSx97SFVtxoxlOSSCmO3b0iW641pt1eEDukLiLPOUh");

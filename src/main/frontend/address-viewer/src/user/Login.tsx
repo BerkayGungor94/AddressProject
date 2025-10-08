@@ -22,7 +22,7 @@ const Login: React.FC = () => {
         setError("");
 
         try {
-            const res = await axios.post("http://localhost:8080/api/auth/login", {
+            const res = await axios.post("http://13.61.35.238:8080/api/auth/login", {
                 username,
                 password,
             });
@@ -33,7 +33,7 @@ const Login: React.FC = () => {
                 setTempToken(res.data.tempToken);
 
                 // OTP kodunu backend'e mail attır
-                await axios.post("http://localhost:8080/api/auth/send-otp", {
+                await axios.post("http://13.61.35.238:8080/api/auth/send-otp", {
                     tempToken: res.data.tempToken,
                 });
 
@@ -55,7 +55,7 @@ const Login: React.FC = () => {
         setError("");
 
         try {
-            const res = await axios.post("http://localhost:8080/api/auth/verify-otp", {
+            const res = await axios.post("http://13.61.35.238:8080/api/auth/verify-otp", {
                 tempToken: tempToken,
                 code: otp,
             });

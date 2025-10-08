@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.AddressResponse;
-import com.example.demo.dto.ArticlesDTO;
 import com.example.demo.dto.ArticlesResponse;
 import com.example.demo.entity.AddressesEntity;
 import com.example.demo.entity.ArticlesEntity;
@@ -33,12 +32,12 @@ public class AddressService {
     private final String urlArticles = "https://newsapi.org/v2/everything?q=apple&from=2025-08-14&to=2025-08-14&sortBy=popularity&apiKey=4ff48156ca1d4010bf92762865bb1c99";
 
 
-//    @PostConstruct
-//    public void init() {
-//        fetchAndSaveArticles();
-//        fetchAndSaveAddress();
-//        logger.info("Articles and Addresses service initialized!");
-//    }
+    @PostConstruct
+    public void init() {
+        fetchAndSaveArticles();
+        fetchAndSaveAddress();
+        logger.info("Articles and Addresses service initialized!");
+    }
 
 
     public void fetchAndSaveAddress() {

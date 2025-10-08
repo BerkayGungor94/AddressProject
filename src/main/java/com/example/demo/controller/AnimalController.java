@@ -16,7 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://13.61.35.238:8080")
 @RequestMapping("/api")
 public class AnimalController {
     private final AnimalService animalService;
