@@ -29,12 +29,12 @@ public class AddressService {
     private final AddressEntityRepository addressEntityRepository;
     private final ArticlesEntityRepository articlesEntityRepository;
     private final String url = "https://fakerapi.it/api/v2/addresses";
-    private final String urlArticles = "https://newsapi.org/v2/everything?q=apple&from=2025-08-14&to=2025-08-14&sortBy=popularity&apiKey=4ff48156ca1d4010bf92762865bb1c99";
+//    private final String urlArticles = "https://newsapi.org/v2/everything?q=apple&from=2025-08-14&to=2025-08-14&sortBy=popularity&apiKey=4ff48156ca1d4010bf92762865bb1c99";
 
 
     @PostConstruct
     public void init() {
-        fetchAndSaveArticles();
+//        fetchAndSaveArticles();
         fetchAndSaveAddress();
         logger.info("Articles and Addresses service initialized!");
     }
@@ -58,31 +58,31 @@ public class AddressService {
         return addressEntityRepository.findAllByOrderByIdAsc();
     }
 
-    public void fetchAndSaveArticles() {
-        try {
-            ArticlesResponse articlesResponse = restTemplate.getForObject(urlArticles, ArticlesResponse.class);
+//    public void fetchAndSaveArticles() {
+//        try {
+//            ArticlesResponse articlesResponse = restTemplate.getForObject(urlArticles, ArticlesResponse.class);
+//
+//            if (articlesResponse != null && articlesResponse.getData() != null) {
+//                List<ArticlesEntity> entityList = articlesResponse.getData().stream()
+//                        .map(FactoryAddressDTO::convertArticlesToEntity)
+//                        .toList();
+//                logger.info("Dto to entity conversion was done successfully!");
+//
+//                articlesEntityRepository.saveAll(entityList);
+//                logger.info("All data were saved successfully into " + ArticlesEntity.class.getSimpleName());
+//            }
+//        } catch (Exception e) {
+//            logger.error("Error while fetching or saving articles", e);
+//        }
+//    }
 
-            if (articlesResponse != null && articlesResponse.getData() != null) {
-                List<ArticlesEntity> entityList = articlesResponse.getData().stream()
-                        .map(FactoryAddressDTO::convertArticlesToEntity)
-                        .toList();
-                logger.info("Dto to entity conversion was done successfully!");
 
-                articlesEntityRepository.saveAll(entityList);
-                logger.info("All data were saved successfully into " + ArticlesEntity.class.getSimpleName());
-            }
-        } catch (Exception e) {
-            logger.error("Error while fetching or saving articles", e);
-        }
-    }
-
-
-    public List<ArticlesEntity> getAllArticles() {
-        return articlesEntityRepository.findAll();
-    }
-
-    public Page<ArticlesEntity> getArticles(Pageable pageable) {
-        return articlesEntityRepository.findAll(pageable);
-    }
+//    public List<ArticlesEntity> getAllArticles() {
+//        return articlesEntityRepository.findAll();
+//    }
+//
+//    public Page<ArticlesEntity> getArticles(Pageable pageable) {
+//        return articlesEntityRepository.findAll(pageable);
+//    }
 }
 

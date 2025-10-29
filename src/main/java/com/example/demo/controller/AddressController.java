@@ -36,19 +36,19 @@ public class AddressController {
 
     }
 
-    @GetMapping("/fetchArticles")
-    public ResponseEntity<String> fetchAndSaveArticles() {
-        addressService.fetchAndSaveArticles();
-        return ResponseEntity.ok("Success!");
-    }
-
-    @GetMapping("/articles")
-    public Page<ArticlesEntity> getArticles(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "1000000") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
-        return articlesEntityRepository.findAll(pageable);
-    }
+//    @GetMapping("/fetchArticles")
+//    public ResponseEntity<String> fetchAndSaveArticles() {
+//        addressService.fetchAndSaveArticles();
+//        return ResponseEntity.ok("Success!");
+//    }
+//
+//    @GetMapping("/articles")
+//    public Page<ArticlesEntity> getArticles(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "1000000") int size
+//    ) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
+//        return articlesEntityRepository.findAll(pageable);
+//    }
 
 }
