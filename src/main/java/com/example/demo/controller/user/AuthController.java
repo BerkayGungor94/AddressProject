@@ -1,5 +1,6 @@
 package com.example.demo.controller.user;
 
+import com.example.demo.config.EncryptionUtil;
 import com.example.demo.config.JwtUtil;
 import com.example.demo.entity.user.UserEntity;
 import com.example.demo.model.OtpEntry;
@@ -32,9 +33,10 @@ public class AuthController {
     // email -> otp entry
     private final Map<String, OtpEntry> verificationCodes = new ConcurrentHashMap<>();
 
+
     @PostMapping("/register")
-    public Map<String, String> register(@RequestBody UserEntity user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public Map<String, String> register(@RequestBody UserEntity user) throws Exception {
+        user.setPassword(EncryptionUtil.encrypt(user.getPassword()));
         user.setRole(UserEntity.Role.ROLE_USER);
         user.setIs2faRequired(true);
         userRepository.save(user);

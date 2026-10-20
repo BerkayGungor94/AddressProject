@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/src/main/resources/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+        - GF_SECURITY_ADMIN_PASSWORD=admin
+        - GF_DATASOURCES_PROMETHEUS_NAME=Prometheus
+        - GF_DATASOURCES_PROMETHEUS_TYPE=prometheus
+        - GF_DATASOURCES_PROMETHEUS_URL=http://prometheus:9090
+        - GF_DATASOURCES_PROMETHEUS_ACCESS=proxy
+        - GF_DATASOURCES_PROMETHEUS_IS_DEFAULT=true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
